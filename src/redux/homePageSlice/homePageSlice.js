@@ -1,28 +1,52 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../apis";
 // First, create the thunk
+
+const initialState = {
+  isLoading: false,
+  homeData: [],
+  errorMessage: "",
+};
+
 export const fetchHomeVideoList = createAsyncThunk(
   "homepage/fetchHomeVideoList",
-  async ({categoryID}, thunkApi) => {
+  async ({ categoryID }, thunkApi) => {
     try {
-      const response = await api.get(
-      `videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&maxResults=20&regionCode=us${categoryID !== null ? `&videoCategoryId=${categoryID}` : ``}&key=${
-        import.meta.env.VITE_YOUTUBE_API_KEY
-      }`
-    );
-    return response.data;
+      const videoRes = await api.get(
+        `videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&maxResults=20&regionCode=us${categoryID !== null ? `&videoCategoryId=${categoryID}` : ``}&key=${
+          import.meta.env.VITE_YOUTUBE_API_KEY
+        }`,
+      );
+      const videosData = videoRes.data.items; //khai báo biến để sau này tham chiếu
+      const channelIds = videosData
+        .map((v) => {
+          return v.snippet.channelId;
+        })
+        .join(",");
+      //Goi API Channel
+      const channelRes = await api.get(
+        `channels?part=snippet%2CcontentDetails%2Cstatistics&id=${channelIds}&key=${
+          import.meta.env.VITE_YOUTUBE_API_KEY
+        }`,
+      );
+      const channelData = channelRes.data.items;
+      //Merge Data
+      const mergeData = videosData.map((v) => {
+        const channel = channelData.find((c) => c.id === v.snippet.channelId);
+        return {
+          ...v,
+          channelProfile: channel.snippet.thumbnails.default.url,
+        };
+      });
+      return mergeData;
     } catch (error) {
       //error.response.data.error.message;
       const errorMessage = error.message || "Cannot load homepage video";
-      return thunkApi.rejectWithValue(errorMessage)
+      return thunkApi.rejectWithValue(errorMessage);
     }
-  }
+  },
 );
-const initialState = {
-  isLoading: false,
-  homeData: {},
-  errorMessage: "",
-};
+
 const homePageSlice = createSlice({
   name: "homepage",
   initialState,
@@ -49,4 +73,4 @@ const homePageSlice = createSlice({
     });
   },
 });
-export default homePageSlice.reducer
+export default homePageSlice.reducer;

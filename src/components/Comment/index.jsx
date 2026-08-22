@@ -16,7 +16,7 @@ const Comment = ({ videoId }) => {
     try {
       setIsLoading(true);
       const response = await api.get(
-        `commentThreads?part=snippet%2Creplies&maxResults=10&video  Id=${videoId}${commentList.nextPageToken ? `&pageToken=${commentList.nextPageToken}` : ""}&key=${
+        `commentThreads?part=snippet%2Creplies&maxResults=10&videoId=${videoId}${commentList.nextPageToken ? `&pageToken=${commentList.nextPageToken}` : ""}&key=${
           import.meta.env.VITE_YOUTUBE_API_KEY
         }`,
       );
