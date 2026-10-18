@@ -4,30 +4,25 @@ import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchChannelList } from "../../redux/channelInfoSlice/channelInfoSlice";
 import api from "../../apis";
+import { fetchActivitiesList } from "../../redux/activitiesSlice/activitiesSlice";
 
 const ChannelInfo = () => {
   const [activeTab, setActiveTab] = useState("Videos");
   const dispatch = useDispatch();
   const [isShowModal, setIsShowModal] = useState(false);
-  const [channelVideos, setChannelVideos] = useState([]);
   const [channelPlaylists, setChannelPlaylists] = useState([]);
   const stateChannel = useSelector((state) => state.channelInfo.channelData);
-
+  const activitiesData = useSelector((state)=> state.activity.activitiesData);
+  console.log(activitiesData);
+  
   const params = useParams();
   useEffect(() => {
     dispatch(fetchChannelList(params.id));
+    dispatch(fetchActivitiesList({params}))
   }, [params.id]);
 
   const channelInfo = stateChannel?.items && stateChannel?.items[0];
-  const fetchChannelVideos = async () => {
-    const response = await api.get(
-      `activities?part=snippet%2CcontentDetails&channelId=${
-        params.id
-      }&maxResults=10&key=${import.meta.env.VITE_YOUTUBE_API_KEY}`
-    );
-    // console.log(response);
-    setChannelVideos(response.data.items);
-  };
+ 
 
   const fetchChannelPlaylist = async () => {
     const response = await api.get(
@@ -40,7 +35,6 @@ const ChannelInfo = () => {
   };
 
   useEffect(() => {
-    fetchChannelVideos();
     fetchChannelPlaylist();
   }, []);
 
@@ -110,8 +104,8 @@ const ChannelInfo = () => {
         </button>
       </div>
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        {activeTab === "Videos" ? channelVideos.length > 0 &&
-          channelVideos.map((video) => {
+        {activeTab === "Videos" ? activitiesData.length > 0 &&
+          activitiesData.map((video) => {
             return <Card key={video.id} videoData={video} isChannel={true} />;
           }): channelPlaylists.length > 0 && channelPlaylists.map((playlist) => {
             return <Card key={playlist.id} videoData={playlist} isChannel={true} isPlaylist={true}/>;

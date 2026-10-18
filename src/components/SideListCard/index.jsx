@@ -1,22 +1,26 @@
 import React from "react";
+import { Link } from "react-router";
+import { convertDate } from "../../utils/function";
 
-const SideListCard = () => {
+const SideListCard = ({activityData}) => {
+  console.log(activityData);
+  
   return (
-    <div className="flex gap-6">
+    <Link to={`/video/${activityData.contentDetails?.playlistItem?.resourceId?.videoId || activityData.contentDetails.upload.videoId}`} className="flex gap-6">
       <div className="w-[50%]">
-        <div className="bg-slate-400 pt-[56%] rounded-md"></div>
+        <img src={activityData.snippet.thumbnails.default.url} className="w-full rounded-md"/>
       </div>
       <div>
-        <h3>Video Title</h3>
-        <p>Author Name</p>
+        <h3>{activityData.snippet.title}</h3>
+        <p>{activityData.snippet.channelTitle}</p>
         <div className="flex gap-1">
-          <span>Video Views</span>
+          <span>{activityData.snippet.channelTitle}</span>
           <span>.</span>
-          <span>Video Date</span>
+          <span>{convertDate(activityData.snippet.publishedAt)}</span>
         </div>
       </div>
       
-    </div>
+    </Link>
   );
 };
 

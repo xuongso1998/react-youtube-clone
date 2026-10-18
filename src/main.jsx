@@ -9,6 +9,7 @@ import CardList from "./components/CardList/index.jsx";
 import VideoDetails from "./components/VideoDetail/index.jsx";
 import ChannelInfo from "./components/ChannelInfo/index.jsx";
 import Playlist from "./components/Playlist/index.jsx";
+import Search from "./components/Search/index.jsx";
 
 const router = createBrowserRouter([
   {
@@ -18,7 +19,8 @@ const router = createBrowserRouter([
       {index: true, element: <CardList/>},
       {path: "video/:id", element: <VideoDetails/> },
       {path: "channel/:id", element: <ChannelInfo/>},
-      {path: "playlist/:id", element: <Playlist/>}
+      {path: "playlist/:id", element: <Playlist/>},
+      {path: "search/", element: <Search/>}
     ]
   },
 ]);

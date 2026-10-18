@@ -32,7 +32,7 @@ const watchPageSlice = createSlice({
     builder.addCase(fetchVideoDetailData.fulfilled, (state, action) => {
       // Add user to the state array
       state.isLoading = false;
-      state.videoDetailData = action.payload;
+      state.videoDetailData = action.payload.items[0];
       state.isError = false;
     });
     builder.addCase(fetchVideoDetailData.rejected, (state) => {
